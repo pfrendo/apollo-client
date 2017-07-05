@@ -181,7 +181,6 @@ describe('client', () => {
       client.store.getState(),
       {
         apollo: {
-          queries: {},
           data: {},
           optimistic: [],
           reducerError: null,
@@ -580,18 +579,6 @@ describe('client', () => {
     };
 
     const finalState = { apollo: assign({}, initialState.apollo, {
-      queries: {
-        '1': {
-          queryString: print(query),
-          document: query,
-          variables: {},
-          networkStatus: NetworkStatus.ready,
-          networkError: null,
-          graphQLErrors: [],
-          previousVariables: null,
-          metadata: null,
-        },
-      },
       reducerError: null,
     }) };
 
