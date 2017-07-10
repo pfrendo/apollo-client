@@ -448,8 +448,16 @@ export class QueryManager {
     // Initialize query in store with unique requestId
     this.queryDocuments[queryId] = queryDoc;
 
-    this.queryStore.initQuery(queryId, queryString, queryDoc, shouldFetch, variables, fetchType === FetchType.poll,
-                              fetchType === FetchType.refetch, metadata, fetchMoreForQueryId);
+    this.queryStore.initQuery({
+      queryId,
+      queryString,
+      document: queryDoc,
+      storePreviousVariables: shouldFetch,
+      variables,
+      isPoll: fetchType === FetchType.poll,
+      isRefetch: fetchType === FetchType.refetch,
+      metadata, fetchMoreForQueryId
+    });
 
     this.broadcastQueries();
 

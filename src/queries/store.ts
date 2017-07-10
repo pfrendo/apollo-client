@@ -20,11 +20,11 @@ export class QueryStore {
     return this.store[queryId];
   }
 
-  public initQuery(queryId: string, queryString: string, document: DocumentNode, storePreviousVariables: boolean,
-                   variables: Object, isPoll: boolean, isRefetch: boolean, metadata: any, fetchMoreForQueryId: string | undefined) {
-    const previousQuery = this.store[queryId];
+  public initQuery(query: {queryId: string, queryString: string, document: DocumentNode, storePreviousVariables: boolean,
+                   variables: Object, isPoll: boolean, isRefetch: boolean, metadata: any, fetchMoreForQueryId: string | undefined}) {
+    const previousQuery = this.store[query.queryId];
 
-    if (previousQuery && previousQuery.queryString !== queryString) {
+    if (previousQuery && previousQuery.queryString !== query.queryString) {
       // XXX we're throwing an error here to catch bugs where a query gets overwritten by a new one.
       // we should implement a separate action for refetching so that QUERY_INIT may never overwrite
       // an existing query (see also: https://github.com/apollostack/apollo-client/issues/732)
@@ -35,12 +35,12 @@ export class QueryStore {
 
     let previousVariables: Object | null = null;
     if (
-      storePreviousVariables &&
+      query.storePreviousVariables &&
       previousQuery &&
       previousQuery.networkStatus !== NetworkStatus.loading
       // if the previous query was still loading, we don't want to remember it at all.
     ) {
-      if (!isEqual(previousQuery.variables, variables)) {
+      if (!isEqual(previousQuery.variables, query.variables)) {
         isSetVariables = true;
         previousVariables = previousQuery.variables;
       }
@@ -51,27 +51,27 @@ export class QueryStore {
 
     if (isSetVariables) {
       newNetworkStatus = NetworkStatus.setVariables;
-    } else if (isPoll) {
+    } else if (query.isPoll) {
       newNetworkStatus = NetworkStatus.poll;
-    } else if (isRefetch) {
+    } else if (query.isRefetch) {
       newNetworkStatus = NetworkStatus.refetch;
       // TODO: can we determine setVariables here if it's a refetch and the variables have changed?
-    } else if (isPoll) {
+    } else if (query.isPoll) {
       newNetworkStatus = NetworkStatus.poll;
     }
 
     // XXX right now if QUERY_INIT is fired twice, like in a refetch situation, we just overwrite
     // the store. We probably want a refetch action instead, because I suspect that if you refetch
     // before the initial fetch is done, you'll get an error.
-    this.store[queryId] = {
-      queryString: queryString,
-      document: document,
-      variables: variables,
+    this.store[query.queryId] = {
+      queryString: query.queryString,
+      document: query.document,
+      variables: query.variables,
       previousVariables,
       networkError: null,
       graphQLErrors: [],
       networkStatus: newNetworkStatus,
-      metadata: metadata,
+      metadata: query.metadata,
     };
 
     // If the action had a `moreForQueryId` property then we need to set the
@@ -81,8 +81,8 @@ export class QueryStore {
     // error action branch, but importantly *not* in the client result branch.
     // This is because the implementation of `fetchMore` *always* sets
     // `fetchPolicy` to `network-only` so we would never have a client result.
-    if (typeof fetchMoreForQueryId === 'string') {
-      this.store[fetchMoreForQueryId].networkStatus = NetworkStatus.fetchMore;
+    if (typeof query.fetchMoreForQueryId === 'string') {
+      this.store[query.fetchMoreForQueryId].networkStatus = NetworkStatus.fetchMore;
     }
   }
 
