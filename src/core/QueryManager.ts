@@ -456,7 +456,7 @@ export class QueryManager {
       variables,
       isPoll: fetchType === FetchType.poll,
       isRefetch: fetchType === FetchType.refetch,
-      metadata, fetchMoreForQueryId
+      metadata, fetchMoreForQueryId,
     });
 
     this.broadcastQueries();

@@ -16,6 +16,10 @@ import { NetworkStatus } from './networkStatus';
 export class QueryStore {
   private store: {[queryId: string]: QueryStoreValue} = {};
 
+  public __getStore(): {[queryId: string]: QueryStoreValue} {
+    return this.store;
+  }
+
   public get(queryId: string): QueryStoreValue {
     return this.store[queryId];
   }

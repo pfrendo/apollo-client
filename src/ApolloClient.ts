@@ -445,7 +445,10 @@ export default class ApolloClient implements DataProxy {
         if (this.devToolsHookCb) {
           this.devToolsHookCb({
             action,
-            state: this.queryManager.getApolloState(),
+            state: {
+              queries: this.queryManager.queryStore.__getStore(),
+              mutations: this.queryManager.mutationStore.__getStore(),
+            },
             dataWithOptimisticResults: this.queryManager.getDataWithOptimisticResults(),
           });
         }
@@ -484,7 +487,10 @@ export default class ApolloClient implements DataProxy {
         if (this.devToolsHookCb) {
           this.devToolsHookCb({
             action,
-            state: this.queryManager.getApolloState(),
+            state: {
+              queries: this.queryManager.queryStore.__getStore(),
+              mutations: this.queryManager.mutationStore.__getStore(),
+            },
             dataWithOptimisticResults: this.queryManager.getDataWithOptimisticResults(),
           });
         }
